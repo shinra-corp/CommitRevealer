@@ -1,8 +1,13 @@
 pragma solidity ^0.5.9;
 
+/*
+    Committer is a contract that can validate an user commit.
+    To avoid front running, only unique msg + salt are allowed.
+    Owner is responsable from changing the between states.
+*/
 
 contract Committer {
-    //States that this contract can have
+    // States that this contract can have
     enum States {Commit, Reveal, Stopped}
 
 
@@ -23,8 +28,8 @@ contract Committer {
         owner = msg.sender;
     }
 
-    //Save commiment from sender. Can only submit one commitment.
-    //A message and salt must be unique.
+    // Save commiment from sender. Can only submit one commitment.
+    // A message and salt must be unique. (Front-runners)
     function commit(
         bytes32 _hashMsg,
         bytes32 _hashSalt
@@ -62,6 +67,8 @@ contract Committer {
         return false;
     }
 
+    // Set contract to next stage.
+    // Only Owner can make this call.
     function nextState() public onlyOwner {
         States oldState = state;
         state = States(uint(state) + 1);
